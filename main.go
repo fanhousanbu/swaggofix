@@ -20,18 +20,25 @@ func main() {
 	}
 	input := string(c)
 
-	sampleRegexp := regexp.MustCompile(`/(:[\w+]*)`)
-
-	result := sampleRegexp.ReplaceAllString(input, "/{$1}")
-
+	result := repl(&input)
 	file, err := os.OpenFile(swagPath, os.O_RDWR|os.O_TRUNC, os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
-	if n, err := io.WriteString(file, result); err != nil {
+	if n, err := io.WriteString(file, *result); err != nil {
 		panic(err)
 	} else {
 		fmt.Printf("修复成功，写入字节数：%d", n)
 	}
+}
+
+// repl 替换
+func repl(orig *string) *string {
+
+	exp := regexp.MustCompile(`/:([\w+]*)`)
+
+	result := exp.ReplaceAllString(*orig, "/{$1}")
+
+	return &result
 }
